@@ -9,7 +9,8 @@
 ## 빠른 시작 (집 PC)
 
 ```bash
-cd deals
+git clone https://github.com/sketchkim-hub/deal.git
+cd deal
 npm install
 cp .env.example .env        # Windows: copy .env.example .env  → 게시 설정 입력
 npm run geo                 # 한국 IP인지 확인

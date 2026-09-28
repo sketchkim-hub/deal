@@ -37,8 +37,8 @@
 3. 코드 받기 — 명령 프롬프트(cmd)에서:
    ```bat
    cd %USERPROFILE%
-   git clone https://github.com/sketchkim-hub/machineshot.git
-   cd machineshot\deals
+   git clone https://github.com/sketchkim-hub/deal.git
+   cd deal
    npm install
    ```
 4. (권장) 쿠팡이 일반 요청을 막을 때 쓸 Chromium:
@@ -110,7 +110,7 @@ npm start
 1. 시작 메뉴 → "작업 스케줄러" → 오른쪽 **작업 만들기**
 2. 일반: 이름 `오늘의특가`, "사용자가 로그온할 때만 실행"
 3. 트리거: 새로 만들기 → **로그온할 때**
-4. 동작: 새로 만들기 → 프로그램: `C:\Users\<이름>\machineshot\deals\deploy\start-windows.bat`
+4. 동작: 새로 만들기 → 프로그램: `C:\Users\<이름>\deal\deploy\start-windows.bat`
 5. 조건: "컴퓨터의 AC 전원이 켜져 있는 경우에만" 체크 해제
 6. 설정 → 전원 옵션에서 **절전 모드: 안 함** 으로 바꾸면 정시에 확인됩니다 (절전이어도 깨어나면 밀린 확인은 실행됨).
 
