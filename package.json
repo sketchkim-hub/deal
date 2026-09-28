@@ -14,7 +14,7 @@
     "check": "node scripts/check-once.js",
     "geo": "node scripts/geo.js",
     "demo": "node scripts/seed-demo.js",
-    "test": "node --test test/"
+    "test": "node --test"
   },
   "dependencies": {
     "cheerio": "^1.0.0"

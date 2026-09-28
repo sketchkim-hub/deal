@@ -143,7 +143,7 @@ ${msg ? `<div class="flash">${h(msg)}</div>` : ''}
 
 <section class="panel">
   <h2>후보 (${candidates.length})</h2>
-  <p class="help">${config.discoverUrls.length || apiOn ? `${config.minDiscount}% 이상 할인 중인 상품 후보입니다. 파트너스 링크를 붙여 게시하세요.` : '후보 자동 탐색이 꺼져 있습니다. API 승인 후 골드박스 특가가 자동으로 들어오거나, .env의 DISCOVER_URLS로 켜 수 있습니다.'}</p>
+  <p class="help">${config.discoverUrls.length || apiOn ? `${config.minDiscount}% 이상 할인 중인 상품 후보입니다. 파트너스 링크를 붙여 게시하세요.` : '후보 자동 탐색이 꺼져 있습니다. API 승인 후 골드박스 특가가 자동으로 들어오거나, .env의 DISCOVER_URLS로 켤 수 있습니다.'}</p>
   ${candidates.length ? `<div class="table-wrap"><table><thead><tr><th></th><th>상품</th><th>가격</th><th>할인</th><th></th></tr></thead><tbody>${candidates.map(candidateRow).join('')}</tbody></table></div>` : ''}
 </section>
 

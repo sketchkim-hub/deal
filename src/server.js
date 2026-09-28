@@ -21,7 +21,7 @@ const MIME = { '.css': 'text/css', '.js': 'text/javascript', '.svg': 'image/svg+
 
 store.load();
 
-// ── helpers ───────────────────────────────────────────────────────────────────
+// ── helpers ───────────────────────────────────────────────────────────
 
 function send(res, status, body, headers = {}) {
   res.writeHead(status, { 'Content-Type': 'text/html; charset=utf-8', ...headers });
@@ -125,11 +125,11 @@ async function createDeal({ partnerUrl = '', productUrl = '', category = '기타
   });
 }
 
-// ── admin ─────────────────────────────────────────────────────────────────────
+// ── admin ─────────────────────────────────────────────────────────────
 
 async function handleAdmin(req, res, url) {
   if (!adminAuthorized(req)) {
-    if (!config.adminPassword) return send(res, 403, 'HOST 를 127.0.0.1 이 아닌 값으로 바꿈다면 .env 에 ADMIN_PASSWORD 를 꼭 설정하세요.');
+    if (!config.adminPassword) return send(res, 403, 'HOST 를 127.0.0.1 이 아닌 값으로 바꿨다면 .env 에 ADMIN_PASSWORD 를 꼭 설정하세요.');
     return send(res, 401, '로그인이 필요합니다.', { 'WWW-Authenticate': 'Basic realm="admin", charset="UTF-8"' });
   }
   if (req.method === 'POST' && !sameOrigin(req)) return send(res, 403, 'bad origin');
@@ -251,7 +251,7 @@ async function handleAdmin(req, res, url) {
     }
     list.splice(i, 1);
     store.save();
-    return back('후보에서 뵐습니다.');
+    return back('후보에서 뺐습니다.');
   }
   return send(res, 404, 'not found');
 }

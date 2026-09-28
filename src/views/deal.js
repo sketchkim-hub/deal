@@ -22,17 +22,19 @@ function priceChart(history) {
   // Step line: a price holds until the next check.
   let d = `M${x(0)},${y(ps[0])}`;
   for (let i = 1; i < pts.length; i++) d += ` H${x(i)} V${y(ps[i])}`;
-  const minI = ps.indexOf(Math.min(...ps));
   const last = pts.length - 1;
-  return `<svg class="chart" viewBox="0 0 ${W} ${H}" role="img" aria-label="최근 ${pts.length}회 가격 변동. 최저 ${won(Math.min(...ps))}, 최고 ${won(Math.max(...ps))}">
-  <path d="${d} V${H - pad.b} H${x(0)} Z" class="area"/>
-  <path d="${d}" class="line"/>
-  <circle cx="${x(minI)}" cy="${y(ps[minI])}" r="4" class="min-dot"/>
-  <text x="${Math.min(Math.max(x(minI), 40), W - 40)}" y="${y(ps[minI]) + 16}" text-anchor="middle" class="lbl">최저 ${won(ps[minI])}</text>
-  <circle cx="${x(last)}" cy="${y(ps[last])}" r="5" class="now-dot"/>
-  <text x="${pad.l}" y="${H - 6}" class="axis">${formatKst(pts[0].t, { withDate: true })}</text>
-  <text x="${W - pad.r}" y="${H - 6}" text-anchor="end" class="axis">${formatKst(pts[last].t, { withDate: true })}</text>
-</svg>`;
+  // The SVG stretches to any width, so labels live in HTML where their size stays fixed.
+  return `<figure class="chart-box">
+  <svg class="chart" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" role="img" aria-label="최근 ${pts.length}회 가격 변동. 최저 ${won(Math.min(...ps))}, 최고 ${won(Math.max(...ps))}">
+    <path d="${d} V${H - pad.b} H${x(0)} Z" class="area"/>
+    <path d="${d}" class="line" vector-effect="non-scaling-stroke"/>
+  </svg>
+  <figcaption class="chart-axis">
+    <span>${formatKst(pts[0].t, { withDate: true })}</span>
+    <b>최저 ${won(Math.min(...ps))} · 최고 ${won(Math.max(...ps))}</b>
+    <span>${formatKst(pts[last].t, { withDate: true })}</span>
+  </figcaption>
+</figure>`;
 }
 
 export function dealPage({ deal, isLive, related, now = Date.now() }) {
