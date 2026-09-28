@@ -1,0 +1,25 @@
+{
+  "name": "teukga",
+  "version": "1.1.0",
+  "private": true,
+  "description": "쿠팡 15% 이상 특가 모음 사이트 — 집 PC에서 가격 확인, GitHub Pages/Firebase로 게시",
+  "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "start": "node src/server.js",
+    "build": "node scripts/publish.js --build-only",
+    "publish": "node scripts/publish.js",
+    "check": "node scripts/check-once.js",
+    "geo": "node scripts/geo.js",
+    "demo": "node scripts/seed-demo.js",
+    "test": "node --test test/"
+  },
+  "dependencies": {
+    "cheerio": "^1.0.0"
+  },
+  "optionalDependencies": {
+    "playwright": "^1.47.0"
+  }
+}

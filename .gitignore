@@ -1,0 +1,10 @@
+node_modules/
+data/
+data-demo/
+public/demo/
+dist/
+.publish/
+.firebase/
+.firebaserc
+backups/
+.env
