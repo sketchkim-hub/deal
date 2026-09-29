@@ -186,6 +186,16 @@ async function apiExtras(run, log) {
   }
 }
 
+// The official API isn't blocked like page fetches are, so it can run even with MONITOR_MODE=off.
+export async function runApiOnly({ log = console.log } = {}) {
+  const run = { startedAt: new Date().toISOString(), reason: 'api' };
+  await apiExtras(run, log);
+  run.finishedAt = new Date().toISOString();
+  store.meta().lastApiRun = run;
+  store.saveNow();
+  return run;
+}
+
 async function extras(fetcher, run, log) {
   await apiExtras(run, log);
   if (config.discoverUrls.length) {

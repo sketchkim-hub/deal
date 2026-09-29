@@ -49,7 +49,7 @@ export function buildSite({ outDir = config.distDir, now = Date.now() } = {}) {
 
   const pages = pageDeals();
   for (const deal of pages) {
-    const html = dealPage({ deal, isLive: store.isPublic(deal, now), related: relatedDeals(deal, pub), now });
+    const html = dealPage({ deal, isLive: store.isPublic(deal, now), related: relatedDeals(deal, pub), now, siteUpdatedAt: lastCheckedAt() });
     write(path.join(outDir, 'd', deal.id, 'index.html'), html);
   }
 

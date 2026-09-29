@@ -123,7 +123,7 @@ test('applyResult tracks price drops and status', () => {
   assert.equal(deal.status, 'active');
   assert.equal(deal.failCount, 1);
   assert.equal(isPublic(deal, t2.getTime() + 3600_000), true);
-  assert.equal(isPublic(deal, t2.getTime() + 25 * 3600_000), false);
+  assert.equal(isPublic(deal, t2.getTime() + 49 * 3600_000), false);
 });
 
 test('deals without a partner link are never public', () => {

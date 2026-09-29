@@ -37,7 +37,7 @@ function priceChart(history) {
 </figure>`;
 }
 
-export function dealPage({ deal, isLive, related, now = Date.now() }) {
+export function dealPage({ deal, isLive, related, now = Date.now(), siteUpdatedAt = null }) {
   const drop = dropOf(deal, now);
   const saving = savingOf(deal);
   const lowest = Math.min(...(deal.history || []).filter((x) => x.p).map((x) => x.p), deal.price ?? Infinity);
@@ -87,6 +87,7 @@ export function dealPage({ deal, isLive, related, now = Date.now() }) {
     path: `/d/${deal.id}/`,
     noindex: !isLive,
     builtAt: new Date(now),
+    siteUpdatedAt,
     body,
   });
 }

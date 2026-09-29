@@ -40,10 +40,14 @@ export const config = {
   adminPassword: env('ADMIN_PASSWORD', ''),
 
   minDiscount: num('MIN_DISCOUNT', 15),
-  staleHours: num('STALE_HOURS', 24),
+  // Hide a deal when its price hasn't been refreshed for this long.
+  staleHours: num('STALE_HOURS', 48),
+  // The dashboard lists deals older than this under "갱신 필요".
+  refreshHours: num('REFRESH_HOURS', 20),
 
-  // on: check at CHECK_TIMES / off: only when asked from the admin page
-  monitorMode: env('MONITOR_MODE', 'on'),
+  // off (default): prices come in through the "특가 담기" bookmarklet.
+  // on: also fetch product pages automatically at CHECK_TIMES (Coupang may block this).
+  monitorMode: env('MONITOR_MODE', 'off'),
   checkTimes: list('CHECK_TIMES', ['09:00', '15:00', '21:00']),
   fetchMode: env('FETCH_MODE', 'auto'),
   requireKrIp: bool('REQUIRE_KR_IP', true),

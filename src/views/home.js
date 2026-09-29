@@ -77,7 +77,7 @@ export function homePage({ deals, lastCheckedAt, now = Date.now() }) {
     <div><dt>최대 할인</dt><dd class="hot">${max}<small>%</small></dd></div>
     <div><dt>평균 할인</dt><dd>${avg}<small>%</small></dd></div>
   </dl>
-  ${lastCheckedAt ? `<p class="hero-note">마지막 가격 확인 ${formatKst(lastCheckedAt, { withDate: true })} · 매일 ${h(config.checkTimes.join(' · '))} 갱신</p>` : ''}
+  ${lastCheckedAt ? `<p class="hero-note">마지막 가격 업데이트 ${formatKst(lastCheckedAt, { withDate: true })}${config.monitorMode === 'on' ? ` · 매일 ${h(config.checkTimes.join(' · '))} 갱신` : ''}</p>` : ''}
 </section>`;
 
   const filters = `<nav class="filters" aria-label="상품 필터">
@@ -106,12 +106,13 @@ export function homePage({ deals, lastCheckedAt, now = Date.now() }) {
   const grid = sorted.length
     ? `<section class="grid" id="grid" aria-live="polite">${sorted.map((d) => card(d, now)).join('')}</section>
 <p class="empty" id="empty" hidden>조건에 맞는 특가가 없어요. 필터를 바꿔 보세요.</p>`
-    : `<section class="empty-state"><div class="big">⏳</div><h2>특가를 준비하고 있어요</h2><p>매일 ${h(config.checkTimes.join(' · '))}에 새 가격을 확인합니다.</p></section>`;
+    : `<section class="empty-state"><div class="big">⏳</div><h2>특가를 준비하고 있어요</h2><p>곧 새 특가로 채워집니다. 잠시 후 다시 들러 주세요.</p></section>`;
 
   return layout({
     path: '/',
     image: sorted[0]?.image,
     builtAt: new Date(now),
+    siteUpdatedAt: lastCheckedAt,
     body: `<main>${hero}${sorted.length ? filters : ''}${dropRail(sorted, now)}${grid}</main>`,
   });
 }
