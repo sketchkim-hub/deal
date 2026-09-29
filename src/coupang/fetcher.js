@@ -26,11 +26,23 @@ async function createBrowser() {
   } catch {
     throw new Error('Chromium 방식을 쓰려면 `npm i playwright && npx playwright install chromium` 을 실행하세요.');
   }
-  const browser = await playwright.chromium.launch({
-    headless: true,
-    executablePath: config.browserPath || undefined,
-    args: ['--disable-blink-features=AutomationControlled'],
-  });
+  let browser;
+  try {
+    browser = await playwright.chromium.launch({
+      headless: true,
+      executablePath: config.browserPath || undefined,
+      args: ['--disable-blink-features=AutomationControlled'],
+    });
+  } catch (e) {
+    if (/Executable doesn't exist|ENOENT/i.test(e.message)) {
+      throw new Error(
+        config.browserPath
+          ? `BROWSER_PATH 에 지정한 브라우저를 찾지 못했습니다: ${config.browserPath}`
+          : 'Chromium 브라우저가 아직 설치되지 않았습니다. 이 폴더에서 `npx playwright install chromium` 을 실행하세요. (또는 .env 에 BROWSER_PATH=설치된 Chrome 경로)',
+      );
+    }
+    throw e;
+  }
   const context = await browser.newContext({
     userAgent: UA,
     locale: 'ko-KR',
