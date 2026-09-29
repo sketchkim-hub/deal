@@ -147,7 +147,8 @@ async function handleAdmin(req, res, url) {
     schedulePublish();
     return back(`${msg} 30초 뒤 사이트에 반영됩니다.`);
   };
-  const p = url.pathname;
+  // "/admin/" and "/admin" are the same page.
+  const p = url.pathname.replace(/\/+$/, '') || '/';
   const noStore = { 'Cache-Control': 'no-store' };
 
   if (req.method === 'GET' && p === '/admin') {
