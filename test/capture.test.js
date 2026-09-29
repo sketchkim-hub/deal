@@ -50,7 +50,7 @@ test('form values accept typed numbers and ignore bad image urls', () => {
 });
 
 test('bookmarklet reads a product page and opens the capture form', () => {
-  const href = bookmarkletHref('http://127.0.0.1:3000');
+  const href = bookmarkletHref('https://user.github.io/deal/admin/capture.html');
   assert.match(href, /^javascript:/);
   const code = decodeURIComponent(href.slice('javascript:'.length));
 
@@ -78,7 +78,7 @@ test('bookmarklet reads a product page and opens the capture form', () => {
     Array,
   };
   vm.runInNewContext(code, sandbox);
-  assert.ok(opened.startsWith('http://127.0.0.1:3000/admin/capture?d='));
+  assert.ok(opened.startsWith('https://user.github.io/deal/admin/capture.html?d='));
   const d = parseCapture(decodeURIComponent(opened.split('?d=')[1]));
   assert.equal(d.productId, '42');
   assert.equal(d.price, 9900);

@@ -4,8 +4,8 @@ import { createFetcher } from './coupang/fetcher.js';
 import { parseProductPage, parseListPage, isBlockedPage } from './coupang/parse.js';
 import { apiEnabled, createDeeplinks, goldbox } from './coupang/api.js';
 import { lookupGeo } from './geo.js';
+import { applyResult as sharedApplyResult } from './shared/rules.js';
 
-const HISTORY_LIMIT = 90;
 const CANDIDATE_LIMIT = 300;
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
@@ -30,44 +30,9 @@ export async function checkUrl(url, fetcher) {
   }
 }
 
-// Apply one check result to a deal. Returns true when the price or discount changed.
+// Apply one check result to a deal (rules shared with the web dashboard).
 export function applyResult(deal, result, now = new Date()) {
-  const iso = now.toISOString();
-  deal.lastCheckedAt = iso;
-  deal.updatedAt = iso;
-  if (!result.ok) {
-    deal.failCount = (deal.failCount || 0) + 1;
-    deal.lastError = result.error || '알 수 없는 오류';
-    if (!deal.lastOkAt) deal.status = 'error';
-    return false;
-  }
-  const d = result.data;
-  let changed = false;
-  if (d.price != null && deal.price != null && d.price !== deal.price) {
-    deal.prevPrice = deal.price;
-    deal.priceChangedAt = iso;
-    changed = true;
-  }
-  if (d.discountRate != null && d.discountRate !== deal.discountRate) changed = true;
-
-  if (!deal.titleLocked && d.title) deal.title = d.title;
-  if (!deal.imageLocked && d.image) deal.image = d.image;
-  for (const k of ['productId', 'itemId', 'vendorItemId']) if (!deal[k] && d[k]) deal[k] = d[k];
-  if (d.price != null) {
-    deal.price = d.price;
-    deal.originalPrice = d.originalPrice ?? null;
-    deal.discountRate = d.discountRate ?? 0;
-  }
-  deal.rocket = Boolean(d.rocket);
-  deal.status = d.soldOut ? 'soldout' : (deal.discountRate ?? 0) >= config.minDiscount ? 'active' : 'below';
-  deal.lastOkAt = iso;
-  deal.failCount = 0;
-  deal.lastError = '';
-
-  deal.history ??= [];
-  deal.history.push({ t: iso, p: deal.price, o: deal.originalPrice, r: deal.discountRate, s: d.soldOut ? 1 : 0 });
-  if (deal.history.length > HISTORY_LIMIT) deal.history.splice(0, deal.history.length - HISTORY_LIMIT);
-  return changed;
+  return sharedApplyResult(deal, result, now, config.minDiscount);
 }
 
 export function mergeCandidates(found, source) {

@@ -2,10 +2,11 @@ import fs from 'node:fs';
 import path from 'node:path';
 import crypto from 'node:crypto';
 import { config } from './config.js';
+import { newDeal, isPublic as sharedIsPublic, emptyDb } from './shared/rules.js';
 
 // A single JSON file is plenty for a few thousand deals and is trivial to back up.
 const FILE = path.join(config.dataDir, 'db.json');
-const EMPTY = { deals: [], candidates: [], runs: [], meta: {} };
+const EMPTY = emptyDb();
 
 let db = null;
 let saveTimer = null;
@@ -51,35 +52,7 @@ export function findDealByProduct(productId, itemId) {
 }
 
 export function addDeal(fields) {
-  const now = new Date().toISOString();
-  const deal = {
-    id: newId(),
-    productUrl: '',
-    partnerUrl: '',
-    productId: '',
-    itemId: '',
-    vendorItemId: '',
-    title: '',
-    image: '',
-    category: '기타',
-    memo: '',
-    rocket: false,
-    price: null,
-    originalPrice: null,
-    discountRate: null,
-    prevPrice: null,
-    priceChangedAt: null,
-    status: 'pending',
-    lastCheckedAt: null,
-    lastOkAt: null,
-    lastError: '',
-    failCount: 0,
-    history: [],
-    hidden: false,
-    createdAt: now,
-    updatedAt: now,
-    ...fields,
-  };
+  const deal = newDeal(fields);
   deals().unshift(deal);
   save();
   return deal;
@@ -99,13 +72,9 @@ export function addRun(run) {
   save();
 }
 
-// Deals a visitor may see: has an affiliate link, is currently on sale, and was verified recently.
+// Deals a visitor may see (rules shared with the web dashboard).
 export function isPublic(deal, now = Date.now()) {
-  if (deal.hidden || !deal.partnerUrl || deal.discountRate == null) return false;
-  if (deal.discountRate < config.minDiscount) return false;
-  // A failed check keeps the last good status; staleness below hides it eventually.
-  if (deal.status !== 'active' || !deal.lastOkAt) return false;
-  return now - Date.parse(deal.lastOkAt) <= config.staleHours * 3600_000;
+  return sharedIsPublic(deal, now, config);
 }
 
 export function publicDeals(now = Date.now()) {

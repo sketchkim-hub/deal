@@ -1,7 +1,7 @@
 // Renders the public site into plain files (dist/) for GitHub Pages or Firebase Hosting.
 import fs from 'node:fs';
 import path from 'node:path';
-import { config, ROOT } from './config.js';
+import { config, ROOT, CATEGORIES } from './config.js';
 import * as store from './store.js';
 import { homePage } from './views/home.js';
 import { dealPage } from './views/deal.js';
@@ -26,6 +26,36 @@ export const pageDeals = () => store.deals().filter((d) => !d.hidden && d.partne
 function write(file, content) {
   fs.mkdirSync(path.dirname(file), { recursive: true });
   fs.writeFileSync(file, content);
+}
+
+// owner/name of the repository the web dashboard saves to.
+function repoName() {
+  if (process.env.GITHUB_REPOSITORY) return process.env.GITHUB_REPOSITORY;
+  const m = String(config.github.remote || '').match(/github\.com[/:]([^/]+\/[^/.]+)/);
+  return m ? m[1] : '';
+}
+
+// The web dashboard is plain static files: admin/*, the shared rule modules, and a config file.
+function copyAdmin(outDir) {
+  const dir = path.join(outDir, 'admin');
+  fs.cpSync(path.join(ROOT, 'admin'), dir, { recursive: true });
+  fs.cpSync(path.join(ROOT, 'src', 'shared'), path.join(dir, 'shared'), { recursive: true });
+  fs.copyFileSync(path.join(ROOT, 'public', 'admin.css'), path.join(dir, 'admin.css'));
+  fs.copyFileSync(path.join(ROOT, 'public', 'favicon.svg'), path.join(dir, 'favicon.svg'));
+  write(
+    path.join(dir, 'site-config.json'),
+    JSON.stringify({
+      repo: repoName(),
+      branch: process.env.GITHUB_REF_NAME || 'main',
+      dataPath: path.relative(ROOT, path.join(config.dataDir, 'db.json')).split(path.sep).join('/'),
+      siteName: config.siteName,
+      siteUrl: config.siteUrl || u(''),
+      minDiscount: config.minDiscount,
+      staleHours: config.staleHours,
+      refreshHours: config.refreshHours,
+      categories: CATEGORIES,
+    }),
+  );
 }
 
 function copyDir(src, dest) {
@@ -54,6 +84,7 @@ export function buildSite({ outDir = config.distDir, now = Date.now() } = {}) {
   }
 
   copyDir(path.join(ROOT, 'public'), path.join(outDir, 'static'));
+  copyAdmin(outDir);
 
   const deals = pub.map(({ id, title, image, category, price, originalPrice, discountRate, rocket, lastOkAt, prevPrice, partnerUrl }) => ({
     id, title, image, category, price, originalPrice, discountRate, rocket, lastOkAt, prevPrice, partnerUrl, page: u(`/d/${id}/`),
@@ -61,7 +92,7 @@ export function buildSite({ outDir = config.distDir, now = Date.now() } = {}) {
   write(path.join(outDir, 'deals.json'), JSON.stringify({ updatedAt: lastCheckedAt(), builtAt: new Date(now).toISOString(), deals }));
 
   const base = config.siteUrl;
-  write(path.join(outDir, 'robots.txt'), `User-agent: *\nAllow: /\n${base ? `Sitemap: ${base}/sitemap.xml\n` : ''}`);
+  write(path.join(outDir, 'robots.txt'), `User-agent: *\nDisallow: ${u('/admin/')}\n${base ? `Sitemap: ${base}/sitemap.xml\n` : ''}`);
   if (base) {
     const urls = ['/', ...pub.map((d) => `/d/${d.id}/`)];
     write(

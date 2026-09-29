@@ -3,39 +3,8 @@
 const UA =
   'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Safari/537.36';
 
-export function isPartnerShortLink(url) {
-  return /^https?:\/\/link\.coupang\.com\/(a|re)\//i.test(url || '');
-}
-
-export function isCoupangUrl(url) {
-  return /^https?:\/\/([a-z0-9-]+\.)*coupang\.com\//i.test(url || '');
-}
-
-// Extract productId / itemId / vendorItemId from a product page URL or a partner redirect URL.
-export function parseProductIds(url) {
-  let u;
-  try {
-    u = new URL(url);
-  } catch {
-    return null;
-  }
-  const q = u.searchParams;
-  const m = u.pathname.match(/\/vp\/products\/(\d+)/) || u.pathname.match(/\/products\/(\d+)/);
-  const productId = m?.[1] || (/^\d+$/.test(q.get('pageKey') || '') ? q.get('pageKey') : '');
-  if (!productId) return null;
-  return {
-    productId,
-    itemId: q.get('itemId') || '',
-    vendorItemId: q.get('vendorItemId') || '',
-  };
-}
-
-export function canonicalProductUrl({ productId, itemId, vendorItemId }) {
-  const u = new URL(`https://www.coupang.com/vp/products/${productId}`);
-  if (itemId) u.searchParams.set('itemId', itemId);
-  if (vendorItemId) u.searchParams.set('vendorItemId', vendorItemId);
-  return u.toString();
-}
+export { isPartnerShortLink, isCoupangUrl, parseProductIds, canonicalProductUrl } from '../shared/ids.js';
+import { parseProductIds, canonicalProductUrl } from '../shared/ids.js';
 
 // Follow a link.coupang.com short link far enough to learn which product it points at.
 // We stop at the first hop that reveals a product id, so the product page itself is not loaded.

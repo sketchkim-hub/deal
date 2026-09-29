@@ -17,6 +17,18 @@ function loadEnv(file) {
 }
 loadEnv(path.join(ROOT, '.env'));
 
+// Site settings committed to the repository (edited on github.com); env / .env still win.
+function loadSiteConfig(file) {
+  if (!fs.existsSync(file)) return;
+  const data = JSON.parse(fs.readFileSync(file, 'utf8'));
+  for (const [key, value] of Object.entries(data)) {
+    if (/^[A-Z0-9_]+$/.test(key) && process.env[key] === undefined) {
+      process.env[key] = Array.isArray(value) ? value.join(',') : String(value);
+    }
+  }
+}
+loadSiteConfig(path.join(ROOT, 'site.config.json'));
+
 const env = (key, fallback = '') => process.env[key] ?? fallback;
 const num = (key, fallback) => {
   const n = Number(env(key, ''));
@@ -77,7 +89,8 @@ export const config = {
     subId: env('COUPANG_SUB_ID'),
   },
 
-  dataDir: path.resolve(ROOT, env('DATA_DIR', 'data')),
+  // content/db.json is committed: the web dashboard edits it through the GitHub API.
+  dataDir: path.resolve(ROOT, env('DATA_DIR', 'content')),
 };
 
 export const DISCLOSURE =

@@ -1,0 +1,6 @@
+{
+  "SITE_NAME": "오늘의특가",
+  "MIN_DISCOUNT": 15,
+  "STALE_HOURS": 48,
+  "REFRESH_HOURS": 20
+}

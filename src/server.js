@@ -11,7 +11,8 @@ import { lastCheckedAt, relatedDeals } from './build.js';
 import { publish, schedulePublish } from './publish.js';
 import { apiEnabled, createDeeplinks } from './coupang/api.js';
 import { parseProductIds, isPartnerShortLink, resolvePartnerLink } from './coupang/url.js';
-import { bookmarkletHref, parseCapture, parseFormData } from './capture.js';
+import { bookmarkletHref, parseCapture, parseFormData } from './shared/capture.js';
+import { findDeal } from './shared/rules.js';
 import { homePage } from './views/home.js';
 import { dealPage } from './views/deal.js';
 import { adminPage } from './views/admin.js';
@@ -69,13 +70,7 @@ function sameOrigin(req) {
   }
 }
 
-// The same product can be captured with a different option (itemId); fall back to the product id.
-function findExisting(productId, itemId) {
-  const exact = store.findDealByProduct(productId, itemId);
-  if (exact) return exact;
-  const same = store.deals().filter((d) => d.productId === productId);
-  return same.length === 1 ? same[0] : null;
-}
+const findExisting = (productId, itemId) => findDeal(store.deals(), productId, itemId);
 
 // ── automatic checks (only with MONITOR_MODE=on) ──────────────────────
 
@@ -161,7 +156,7 @@ async function handleAdmin(req, res, url) {
       msg: url.searchParams.get('msg'),
       apiOn: apiEnabled(),
       lastPublish: store.meta().lastPublish,
-      bookmarklet: bookmarkletHref(`http://${req.headers.host}`),
+      bookmarklet: bookmarkletHref(`http://${req.headers.host}/admin/capture`),
     }), noStore);
   }
 
